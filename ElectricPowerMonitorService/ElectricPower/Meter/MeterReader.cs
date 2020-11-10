@@ -39,7 +39,7 @@ namespace ElectricPowerMonitorService.ElectricPower.Meter {
 					var sp = this._serialPort;
 					this._serialPort = null;
 					sp.Dispose();
-					throw new MeterReaderException("初期化エラー", this.GetLogs(), e);
+					throw new MeterReaderException($"初期化エラー {name}", this.GetLogs(), e);
 				}
 				break;
 			}
