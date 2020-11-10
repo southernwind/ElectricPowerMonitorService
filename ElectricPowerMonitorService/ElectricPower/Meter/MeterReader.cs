@@ -24,6 +24,7 @@ namespace ElectricPowerMonitorService.ElectricPower.Meter {
 		/// <param name="id">ID</param>
 		/// <param name="pw">Password</param>
 		public void Initialize(string id, string pw) {
+			var failedLogs = new List<string>();
 			foreach (var name in SerialPort.GetPortNames()) {
 				this._serialPort = new SerialPort(name, 115200);
 				try {
@@ -35,14 +36,18 @@ namespace ElectricPowerMonitorService.ElectricPower.Meter {
 					this.Write($"SKSETPWD C {pw}");
 					this.ReadString();
 					this.ReadString();
+					return;
 				} catch (Exception e) {
 					var sp = this._serialPort;
 					this._serialPort = null;
 					sp.Dispose();
-					throw new MeterReaderException($"初期化エラー {name}", this.GetLogs(), e);
+					failedLogs.Add($"[{name}]");
+					failedLogs.AddRange(this.GetLogs());
+					failedLogs.Add(e.ToString());
 				}
-				break;
 			}
+
+			throw new MeterReaderException("初期化エラー", failedLogs.ToArray());
 		}
 
 		/// <summary>
