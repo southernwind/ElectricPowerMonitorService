@@ -234,11 +234,7 @@ namespace ElectricPowerMonitorService.ElectricPower.Meter {
 		/// </summary>
 		/// <returns>ログ</returns>
 		private string[] GetLogs() {
-			if (this._serialPort == null) {
-				throw new InvalidOperationException();
-			}
-
-			return this._log.Select(Encoding.ASCII.GetString).Concat(new[] { this._serialPort.ReadExisting() }).ToArray();
+			return this._log.Select(Encoding.ASCII.GetString).Concat(new[] { this._serialPort?.ReadExisting() ?? "シリアルポート[null]" }).ToArray();
 		}
 
 		protected virtual void Dispose(bool disposing) {
