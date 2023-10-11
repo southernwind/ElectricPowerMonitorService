@@ -83,10 +83,8 @@ namespace ElectricPowerMonitorService.ElectricPower {
 			var op = new MeterReader();
 			this._disposables.Add(op);
 			op.Initialize(this._electricPowerMonitorId, this._electricPowerMonitorPassword);
-			var channel = op.ScanChannel();
-			if (channel == null) {
-				throw new Exception();
-			}
+			var channel = op.ScanChannel() ?? throw new Exception();
+
 			this._logger.LogInformation($"チャンネル取得[channel:{channel.Channel}] [addr:{channel.Addr}]");
 
 			var address = op.Connect(channel);
@@ -94,13 +92,13 @@ namespace ElectricPowerMonitorService.ElectricPower {
 
 			var timerLoop = Observable.Interval(TimeSpan.FromSeconds(1))
 				.Synchronize()
-				.Select(_ => DateTime.Now)
+				.Select(_ => (DateTime?)DateTime.Now)
 				.Do(x => {
 					if (op.Measurement(address) is not { } result) {
 						return;
 					}
 
-					this._electricPowerReceivedSubject.OnNext((x, result));
+					this._electricPowerReceivedSubject.OnNext(((DateTime, int))(x!, result));
 				}).Catch((MeterReader.MeterReaderException e) => {
 					this._logger.LogWarning(e, "電力量監視時例外");
 					return null;

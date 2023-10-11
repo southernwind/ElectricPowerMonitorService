@@ -156,7 +156,7 @@ namespace ElectricPowerMonitorService.ElectricPower.Meter {
 				var bytes = this.ReadBytes();
 
 				if (!Encoding.ASCII.GetString(bytes).StartsWith("ERXUDP")) {
-					throw new MeterReaderException("受信エラー", this.GetLogs());
+					throw new MeterReaderException($"受信エラー[{Encoding.ASCII.GetString(bytes)}]", this.GetLogs());
 				}
 
 				var frame = new EchoNetLiteFrame(bytes.SkipWhile(x => x != 0x10).ToArray());
