@@ -8,7 +8,7 @@ node {
   }
 
   stage('Build ElectricPowerMonitorService'){
-    dotnetBuild configuration: 'Release', project: 'ElectricPowerMonitorService.sln', sdk: '.NET7', unstableIfWarnings: true
+    dotnetBuild configuration: 'Release', project: 'ElectricPowerMonitorService.sln', sdk: '.NET8', unstableIfWarnings: true
   }
 
   withCredentials( \
@@ -17,7 +17,7 @@ node {
         keyFileVariable: 'SSH_KEY', \
         usernameVariable: 'SSH_USER')]) {
     stage('Deploy ElectricPowerMonitorService'){
-      sh 'scp -pr -i ${SSH_KEY} ./ElectricPowerMonitorService/bin/Release/net7/* ${SSH_USER}@home-server.localnet:/opt/electric-power-monitor-service'
+      sh 'scp -pr -i ${SSH_KEY} ./ElectricPowerMonitorService/bin/Release/net8/* ${SSH_USER}@home-server.localnet:/opt/electric-power-monitor-service'
     }
 
     stage('Restart ElectricPowerMonitorService'){
